@@ -66,7 +66,6 @@ export default function Home() {
 
   function onPick(f: File | null) {
     if (!f) return;
-    // basic client-side guard
     if (!/^image\/(png|jpeg)$/.test(f.type)) {
       setError("请上传 PNG 或 JPG 图片");
       setFile(null);
@@ -83,233 +82,231 @@ export default function Home() {
     setFile(f);
   }
 
+  const hasInput = !!inputUrl;
+  const hasOutput = !!resultUrl;
+
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900">
-      <div className="mx-auto max-w-5xl px-6 py-12">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-6">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1 text-xs text-slate-600 shadow-sm">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              MVP · remove.bg
+    <main className="relative min-h-screen overflow-hidden text-white">
+      {/* Background */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-slate-950" />
+        <div className="absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-fuchsia-500/25 blur-[90px]" />
+        <div className="absolute -right-40 top-40 h-[560px] w-[560px] rounded-full bg-cyan-400/20 blur-[110px]" />
+        <div className="absolute left-1/2 top-[55%] h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-emerald-400/10 blur-[120px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.06)_1px,transparent_0)] [background-size:22px_22px] opacity-50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/0 to-black/40" />
+      </div>
+
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        {/* Top bar */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-2xl bg-white/10 ring-1 ring-white/15 backdrop-blur grid place-items-center">
+              <span className="text-sm font-semibold">IB</span>
             </div>
-            <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
-              Image Background Remover
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 md:text-base">
-              上传图片，一键去除背景并下载透明 PNG。我们不存储图片，全部在内存中处理。
-            </p>
+            <div>
+              <div className="text-sm font-medium text-white/90">Image Background Remover</div>
+              <div className="text-xs text-white/60">MVP · Powered by remove.bg</div>
+            </div>
           </div>
 
-          <div className="hidden md:block">
-            <div className="rounded-2xl border bg-white p-4 text-sm text-slate-600 shadow-sm">
-              <div className="font-medium text-slate-900">Tips</div>
-              <ul className="mt-2 list-disc space-y-1 pl-5">
-                <li>建议 1:1 或主体居中图片</li>
-                <li>最大 10MB，支持 PNG/JPG</li>
-              </ul>
+          <div className="hidden sm:flex items-center gap-2">
+            <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/70 ring-1 ring-white/15">
+              No storage
+            </span>
+            <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/70 ring-1 ring-white/15">
+              PNG / JPG ≤ 10MB
+            </span>
+          </div>
+        </div>
+
+        {/* Hero */}
+        <div className="mt-10 grid gap-8 lg:grid-cols-2 lg:items-end">
+          <div>
+            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+              Remove backgrounds,
+              <span className="block bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-emerald-300 bg-clip-text text-transparent">
+                instantly.
+              </span>
+            </h1>
+            <p className="mt-4 max-w-xl text-base leading-7 text-white/70">
+              Upload an image to get a clean transparent PNG. We don’t store your images—everything is processed in memory.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-3 text-sm">
+              <div className="rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/15 backdrop-blur">
+                <div className="text-white/80">Fast workflow</div>
+                <div className="text-xs text-white/60">Upload → Remove → Download</div>
+              </div>
+              <div className="rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/15 backdrop-blur">
+                <div className="text-white/80">Privacy-first</div>
+                <div className="text-xs text-white/60">No storage, no history</div>
+              </div>
+              <div className="rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/15 backdrop-blur">
+                <div className="text-white/80">High quality</div>
+                <div className="text-xs text-white/60">remove.bg engine</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Upload card */}
+          <div className="rounded-3xl bg-white/10 p-5 ring-1 ring-white/15 backdrop-blur shadow-[0_30px_120px_rgba(0,0,0,0.45)]">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium">Upload</div>
+              <button onClick={reset} className="text-xs text-white/60 hover:text-white">
+                Reset
+              </button>
+            </div>
+
+            <label
+              className={
+                "mt-4 flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-white/15 bg-white/5 p-6 text-center transition " +
+                (dragOver ? "border-emerald-300/60 bg-emerald-300/10" : "hover:bg-white/10")
+              }
+              onDragEnter={(e) => {
+                e.preventDefault();
+                setDragOver(true);
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOver(true);
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                setDragOver(false);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDragOver(false);
+                const f = e.dataTransfer.files?.[0] || null;
+                onPick(f);
+              }}
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/15">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  className="h-6 w-6 text-white/90"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7 10l5-5 5 5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14" />
+                </svg>
+              </div>
+
+              <div className="mt-3 text-sm font-medium text-white/90">Drag & drop or click to upload</div>
+              <div className="mt-1 text-xs text-white/60">PNG / JPG · max 10MB</div>
+
+              <input type="file" accept="image/png,image/jpeg" className="sr-only" onChange={(e) => onPick(e.target.files?.[0] || null)} />
+            </label>
+
+            {file ? (
+              <div className="mt-4 rounded-2xl bg-black/20 p-3 ring-1 ring-white/10">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-medium leading-5">{file.name}</div>
+                    <div className="mt-1 text-xs text-white/60">
+                      {file.type} · {formatBytes(file.size)}
+                    </div>
+                  </div>
+                  <span className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/70 ring-1 ring-white/15">Ready</span>
+                </div>
+              </div>
+            ) : null}
+
+            {error ? (
+              <div className="mt-4 rounded-2xl border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-200">
+                {error}
+              </div>
+            ) : null}
+
+            <div className="mt-4 flex gap-3">
+              <button
+                onClick={onSubmit}
+                disabled={!file || status === "uploading"}
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-500 to-cyan-400 px-4 py-2.5 text-sm font-semibold text-slate-950 shadow-sm hover:opacity-95 disabled:opacity-40"
+              >
+                {status === "uploading" ? (
+                  <>
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-950/20 border-t-slate-950" />
+                    Processing…
+                  </>
+                ) : (
+                  <>Remove background</>
+                )}
+              </button>
+
+              <button
+                onClick={reset}
+                className="rounded-2xl bg-white/10 px-4 py-2.5 text-sm text-white/80 ring-1 ring-white/15 hover:bg-white/15"
+              >
+                Clear
+              </button>
+            </div>
+
+            <div className="mt-3 text-xs text-white/55">
+              By uploading you agree not to submit sensitive content. Service powered by remove.bg.
             </div>
           </div>
         </div>
 
-        {/* Upload card */}
-        <section className="mt-10 grid gap-6 md:grid-cols-5">
-          <div className="md:col-span-2">
-            <div className="rounded-2xl border bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div className="text-sm font-medium">上传图片</div>
-                <button
-                  onClick={reset}
-                  className="text-xs text-slate-500 hover:text-slate-900"
-                >
-                  重置
-                </button>
-              </div>
-
-              <label
-                className={
-                  "mt-4 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition " +
-                  (dragOver
-                    ? "border-emerald-400 bg-emerald-50"
-                    : "border-slate-200 bg-slate-50 hover:bg-slate-100")
-                }
-                onDragEnter={(e) => {
-                  e.preventDefault();
-                  setDragOver(true);
-                }}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setDragOver(true);
-                }}
-                onDragLeave={(e) => {
-                  e.preventDefault();
-                  setDragOver(false);
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setDragOver(false);
-                  const f = e.dataTransfer.files?.[0] || null;
-                  onPick(f);
-                }}
-              >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white shadow-sm">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    className="h-6 w-6 text-slate-700"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M7 10l5-5 5 5"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 5v14"
-                    />
-                  </svg>
-                </div>
-
-                <div className="mt-3 text-sm font-medium">
-                  拖拽图片到这里，或点击选择
-                </div>
-                <div className="mt-1 text-xs text-slate-500">
-                  PNG / JPG，最大 10MB
-                </div>
-
-                <input
-                  type="file"
-                  accept="image/png,image/jpeg"
-                  className="sr-only"
-                  onChange={(e) => onPick(e.target.files?.[0] || null)}
-                />
-              </label>
-
-              {file ? (
-                <div className="mt-4 rounded-xl border bg-white p-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="text-sm font-medium leading-5">
-                        {file.name}
-                      </div>
-                      <div className="mt-1 text-xs text-slate-500">
-                        {file.type} · {formatBytes(file.size)}
-                      </div>
-                    </div>
-                    <span className="rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-600">
-                      Ready
-                    </span>
-                  </div>
-                </div>
-              ) : null}
-
-              {error ? (
-                <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-                  {error}
-                </div>
-              ) : null}
-
-              <div className="mt-4 flex gap-3">
-                <button
-                  onClick={onSubmit}
-                  disabled={!file || status === "uploading"}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-black disabled:opacity-40"
-                >
-                  {status === "uploading" ? (
-                    <>
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                      处理中…
-                    </>
-                  ) : (
-                    <>开始去背景</>
-                  )}
-                </button>
-
-                <button
-                  onClick={reset}
-                  className="rounded-xl border bg-white px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
-                >
-                  清空
-                </button>
-              </div>
-
-              <div className="mt-3 text-xs text-slate-500">
-                去背景由 remove.bg 提供。请勿上传敏感信息。
-              </div>
+        {/* Output section - no blank space */}
+        <section className="mt-10 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-3xl bg-white/10 p-5 ring-1 ring-white/15 backdrop-blur">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium">Input preview</div>
+              <div className="text-xs text-white/60">{hasInput ? "Ready" : "—"}</div>
             </div>
+            {hasInput ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={inputUrl} alt="input" className="mt-4 h-[420px] w-full rounded-2xl bg-white/5 object-contain" />
+            ) : (
+              <div className="mt-4 grid h-[420px] place-items-center rounded-2xl bg-white/5 text-sm text-white/50">
+                Upload an image to preview
+              </div>
+            )}
           </div>
 
-          {/* Preview */}
-          <div className="md:col-span-3">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="rounded-2xl border bg-white p-5 shadow-sm">
-                <div className="text-sm font-medium">原图预览</div>
-                {inputUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={inputUrl}
-                    alt="input"
-                    className="mt-4 aspect-square w-full rounded-xl object-contain bg-slate-50"
-                  />
-                ) : (
-                  <div className="mt-4 flex aspect-square w-full items-center justify-center rounded-xl bg-slate-50 text-sm text-slate-400">
-                    请选择图片
-                  </div>
-                )}
-              </div>
-
-              <div className="rounded-2xl border bg-white p-5 shadow-sm">
-                <div className="text-sm font-medium">结果（透明 PNG）</div>
-                {resultUrl ? (
-                  <>
-                    <div className="mt-4 rounded-xl bg-[linear-gradient(45deg,#f1f5f9_25%,transparent_25%),linear-gradient(-45deg,#f1f5f9_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#f1f5f9_75%),linear-gradient(-45deg,transparent_75%,#f1f5f9_75%)] bg-[length:20px_20px] bg-[position:0_0,0_10px,10px_-10px,-10px_0px] p-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={resultUrl}
-                        alt="result"
-                        className="aspect-square w-full rounded-lg object-contain"
-                      />
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap items-center gap-3">
-                      <a
-                        href={resultUrl}
-                        download="removed-bg.png"
-                        className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700"
-                      >
-                        下载 PNG
-                      </a>
-                      <div className="text-xs text-slate-500">
-                        建议下载后再做二次压缩/裁剪。
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="mt-4 flex aspect-square w-full items-center justify-center rounded-xl bg-slate-50 text-sm text-slate-400">
-                    {status === "uploading" ? "处理中…" : "等待生成"}
-                  </div>
-                )}
+          <div className="rounded-3xl bg-white/10 p-5 ring-1 ring-white/15 backdrop-blur">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium">Output (transparent PNG)</div>
+              <div className="text-xs text-white/60">
+                {status === "uploading" ? "Processing" : hasOutput ? "Done" : "—"}
               </div>
             </div>
 
-            <div className="mt-6 rounded-2xl border bg-white p-5 text-sm text-slate-600 shadow-sm">
-              <div className="font-medium text-slate-900">隐私与说明</div>
-              <ul className="mt-2 list-disc space-y-1 pl-5">
-                <li>图片不落盘、不存储，仅在请求链路中处理。</li>
-                <li>如接口返回失败，可能是 remove.bg 配额不足或密钥未配置。</li>
-              </ul>
-            </div>
+            {hasOutput ? (
+              <>
+                <div className="mt-4 rounded-2xl bg-[linear-gradient(45deg,rgba(255,255,255,0.10)_25%,transparent_25%),linear-gradient(-45deg,rgba(255,255,255,0.10)_25%,transparent_25%),linear-gradient(45deg,transparent_75%,rgba(255,255,255,0.10)_75%),linear-gradient(-45deg,transparent_75%,rgba(255,255,255,0.10)_75%)] bg-[length:18px_18px] bg-[position:0_0,0_9px,9px_-9px,-9px_0px] p-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={resultUrl} alt="result" className="h-[420px] w-full rounded-xl object-contain" />
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                  <a
+                    href={resultUrl}
+                    download="removed-bg.png"
+                    className="inline-flex items-center justify-center rounded-2xl bg-emerald-400 px-4 py-2.5 text-sm font-semibold text-slate-950 hover:bg-emerald-300"
+                  >
+                    Download PNG
+                  </a>
+                  <div className="text-xs text-white/55">Tip: crop & compress for best web performance.</div>
+                </div>
+              </>
+            ) : (
+              <div className="mt-4 grid h-[420px] place-items-center rounded-2xl bg-white/5 text-sm text-white/50">
+                {status === "uploading" ? "Processing…" : "Your result will appear here"}
+              </div>
+            )}
           </div>
         </section>
+
+        <footer className="mt-10 text-xs text-white/50">
+          © {new Date().getFullYear()} · Built with Next.js + Tailwind · remove.bg integration
+        </footer>
       </div>
     </main>
   );
