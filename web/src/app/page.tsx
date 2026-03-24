@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getDict, type Lang } from "@/lib/i18n";
 
 type Status = "idle" | "uploading" | "done" | "error";
@@ -16,8 +16,39 @@ function formatBytes(bytes: number) {
   return `${n.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
 }
 
+function getInitialLang(): Lang {
+  if (typeof window === "undefined") return "zh";
+  const saved = window.localStorage.getItem("lang");
+  if (saved === "en" || saved === "zh") return saved;
+  // default based on browser
+  const nav = (navigator.language || "").toLowerCase();
+  return nav.startsWith("zh") ? "zh" : "en";
+}
+
 export default function Home() {
   const [lang, setLang] = useState<Lang>("zh");
+  const [langOpen, setLangOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setLang(getInitialLang());
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") window.localStorage.setItem("lang", lang);
+  }, [lang]);
+
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (!langOpen) return;
+      const el = menuRef.current;
+      if (!el) return;
+      if (!el.contains(e.target as Node)) setLangOpen(false);
+    }
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, [langOpen]);
+
   const t = useMemo(() => getDict(lang), [lang]);
 
   const [file, setFile] = useState<File | null>(null);
@@ -105,7 +136,7 @@ export default function Home() {
         {/* Top bar */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-white/10 ring-1 ring-white/15 backdrop-blur grid place-items-center">
+            <div className="grid h-10 w-10 place-items-center rounded-2xl bg-white/10 ring-1 ring-white/15 backdrop-blur">
               <span className="text-sm font-semibold">IB</span>
             </div>
             <div>
@@ -124,14 +155,57 @@ export default function Home() {
               </span>
             </div>
 
-            <button
-              onClick={() => setLang((v) => (v === "zh" ? "en" : "zh"))}
-              className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/80 ring-1 ring-white/15 hover:bg-white/15"
-              aria-label="toggle language"
-              title="中文 / English"
-            >
-              {lang === "zh" ? "EN" : "中文"}
-            </button>
+            {/* Language dropdown */}
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setLangOpen((v) => !v)}
+                className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs text-white/80 ring-1 ring-white/15 hover:bg-white/15"
+                aria-haspopup="menu"
+                aria-expanded={langOpen}
+              >
+                <span>{lang === "zh" ? "中文" : "English"}</span>
+                <svg
+                  className={`h-3.5 w-3.5 transition ${langOpen ? "rotate-180" : ""}`}
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.7a.75.75 0 1 1 1.06 1.06l-4.24 4.25a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+
+              {langOpen ? (
+                <div
+                  role="menu"
+                  className="absolute right-0 mt-2 w-36 overflow-hidden rounded-2xl bg-slate-950/80 ring-1 ring-white/15 backdrop-blur shadow-[0_20px_80px_rgba(0,0,0,0.6)]"
+                >
+                  <button
+                    role="menuitem"
+                    className={`w-full px-3 py-2 text-left text-xs hover:bg-white/10 ${lang === "zh" ? "text-white" : "text-white/75"}`}
+                    onClick={() => {
+                      setLang("zh");
+                      setLangOpen(false);
+                    }}
+                  >
+                    中文
+                  </button>
+                  <button
+                    role="menuitem"
+                    className={`w-full px-3 py-2 text-left text-xs hover:bg-white/10 ${lang === "en" ? "text-white" : "text-white/75"}`}
+                    onClick={() => {
+                      setLang("en");
+                      setLangOpen(false);
+                    }}
+                  >
+                    English
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
 
@@ -144,9 +218,7 @@ export default function Home() {
                 {t.heroTitle2}
               </span>
             </h1>
-            <p className="mt-4 max-w-xl text-base leading-7 text-white/70">
-              {t.heroDesc}
-            </p>
+            <p className="mt-4 max-w-xl text-base leading-7 text-white/70">{t.heroDesc}</p>
 
             <div className="mt-6 flex flex-wrap gap-3 text-sm">
               <div className="rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/15 backdrop-blur">
@@ -215,7 +287,12 @@ export default function Home() {
               <div className="mt-3 text-sm font-medium text-white/90">{t.dropTitle}</div>
               <div className="mt-1 text-xs text-white/60">{t.dropHint}</div>
 
-              <input type="file" accept="image/png,image/jpeg" className="sr-only" onChange={(e) => onPick(e.target.files?.[0] || null)} />
+              <input
+                type="file"
+                accept="image/png,image/jpeg"
+                className="sr-only"
+                onChange={(e) => onPick(e.target.files?.[0] || null)}
+              />
             </label>
 
             {file ? (
@@ -277,7 +354,11 @@ export default function Home() {
             </div>
             {hasInput ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={inputUrl} alt="input" className="mt-4 h-[420px] w-full rounded-2xl bg-white/5 object-contain" />
+              <img
+                src={inputUrl}
+                alt="input"
+                className="mt-4 h-[420px] w-full rounded-2xl bg-white/5 object-contain"
+              />
             ) : (
               <div className="mt-4 grid h-[420px] place-items-center rounded-2xl bg-white/5 text-sm text-white/50">
                 {t.inputPlaceholder}
