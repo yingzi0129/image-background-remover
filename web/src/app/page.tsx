@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { getDict, type Lang } from "@/lib/i18n";
 
 type Status = "idle" | "uploading" | "done" | "error";
 
@@ -16,6 +17,9 @@ function formatBytes(bytes: number) {
 }
 
 export default function Home() {
+  const [lang, setLang] = useState<Lang>("zh");
+  const t = useMemo(() => getDict(lang), [lang]);
+
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>("");
@@ -52,7 +56,7 @@ export default function Home() {
       setResultUrl(url);
       setStatus("done");
     } catch (e: any) {
-      setError(e?.message || "处理失败，请稍后重试");
+      setError(e?.message || "Request failed");
       setStatus("error");
     }
   }
@@ -67,12 +71,12 @@ export default function Home() {
   function onPick(f: File | null) {
     if (!f) return;
     if (!/^image\/(png|jpeg)$/.test(f.type)) {
-      setError("请上传 PNG 或 JPG 图片");
+      setError(t.errType);
       setFile(null);
       return;
     }
     if (f.size > 10 * 1024 * 1024) {
-      setError("图片太大，请上传 10MB 以内的图片");
+      setError(t.errSize);
       setFile(null);
       return;
     }
@@ -105,18 +109,29 @@ export default function Home() {
               <span className="text-sm font-semibold">IB</span>
             </div>
             <div>
-              <div className="text-sm font-medium text-white/90">Image Background Remover</div>
-              <div className="text-xs text-white/60">MVP · Powered by remove.bg</div>
+              <div className="text-sm font-medium text-white/90">{t.brand}</div>
+              <div className="text-xs text-white/60">{t.tagline}</div>
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2">
-            <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/70 ring-1 ring-white/15">
-              No storage
-            </span>
-            <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/70 ring-1 ring-white/15">
-              PNG / JPG ≤ 10MB
-            </span>
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-2">
+              <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/70 ring-1 ring-white/15">
+                {t.chipNoStorage}
+              </span>
+              <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/70 ring-1 ring-white/15">
+                {t.chipLimit}
+              </span>
+            </div>
+
+            <button
+              onClick={() => setLang((v) => (v === "zh" ? "en" : "zh"))}
+              className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/80 ring-1 ring-white/15 hover:bg-white/15"
+              aria-label="toggle language"
+              title="中文 / English"
+            >
+              {lang === "zh" ? "EN" : "中文"}
+            </button>
           </div>
         </div>
 
@@ -124,27 +139,27 @@ export default function Home() {
         <div className="mt-10 grid gap-8 lg:grid-cols-2 lg:items-end">
           <div>
             <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-              Remove backgrounds,
+              {t.heroTitle1}
               <span className="block bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-emerald-300 bg-clip-text text-transparent">
-                instantly.
+                {t.heroTitle2}
               </span>
             </h1>
             <p className="mt-4 max-w-xl text-base leading-7 text-white/70">
-              Upload an image to get a clean transparent PNG. We don’t store your images—everything is processed in memory.
+              {t.heroDesc}
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3 text-sm">
               <div className="rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/15 backdrop-blur">
-                <div className="text-white/80">Fast workflow</div>
-                <div className="text-xs text-white/60">Upload → Remove → Download</div>
+                <div className="text-white/80">{t.featureFastTitle}</div>
+                <div className="text-xs text-white/60">{t.featureFastDesc}</div>
               </div>
               <div className="rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/15 backdrop-blur">
-                <div className="text-white/80">Privacy-first</div>
-                <div className="text-xs text-white/60">No storage, no history</div>
+                <div className="text-white/80">{t.featurePrivacyTitle}</div>
+                <div className="text-xs text-white/60">{t.featurePrivacyDesc}</div>
               </div>
               <div className="rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/15 backdrop-blur">
-                <div className="text-white/80">High quality</div>
-                <div className="text-xs text-white/60">remove.bg engine</div>
+                <div className="text-white/80">{t.featureQualityTitle}</div>
+                <div className="text-xs text-white/60">{t.featureQualityDesc}</div>
               </div>
             </div>
           </div>
@@ -152,9 +167,9 @@ export default function Home() {
           {/* Upload card */}
           <div className="rounded-3xl bg-white/10 p-5 ring-1 ring-white/15 backdrop-blur shadow-[0_30px_120px_rgba(0,0,0,0.45)]">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-medium">Upload</div>
+              <div className="text-sm font-medium">{t.upload}</div>
               <button onClick={reset} className="text-xs text-white/60 hover:text-white">
-                Reset
+                {t.reset}
               </button>
             </div>
 
@@ -197,8 +212,8 @@ export default function Home() {
                 </svg>
               </div>
 
-              <div className="mt-3 text-sm font-medium text-white/90">Drag & drop or click to upload</div>
-              <div className="mt-1 text-xs text-white/60">PNG / JPG · max 10MB</div>
+              <div className="mt-3 text-sm font-medium text-white/90">{t.dropTitle}</div>
+              <div className="mt-1 text-xs text-white/60">{t.dropHint}</div>
 
               <input type="file" accept="image/png,image/jpeg" className="sr-only" onChange={(e) => onPick(e.target.files?.[0] || null)} />
             </label>
@@ -212,7 +227,9 @@ export default function Home() {
                       {file.type} · {formatBytes(file.size)}
                     </div>
                   </div>
-                  <span className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/70 ring-1 ring-white/15">Ready</span>
+                  <span className="rounded-full bg-white/10 px-2 py-1 text-xs text-white/70 ring-1 ring-white/15">
+                    {t.ready}
+                  </span>
                 </div>
               </div>
             ) : null}
@@ -232,10 +249,10 @@ export default function Home() {
                 {status === "uploading" ? (
                   <>
                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-950/20 border-t-slate-950" />
-                    Processing…
+                    {t.processing}
                   </>
                 ) : (
-                  <>Remove background</>
+                  <>{t.btnRemove}</>
                 )}
               </button>
 
@@ -243,38 +260,36 @@ export default function Home() {
                 onClick={reset}
                 className="rounded-2xl bg-white/10 px-4 py-2.5 text-sm text-white/80 ring-1 ring-white/15 hover:bg-white/15"
               >
-                Clear
+                {t.btnClear}
               </button>
             </div>
 
-            <div className="mt-3 text-xs text-white/55">
-              By uploading you agree not to submit sensitive content. Service powered by remove.bg.
-            </div>
+            <div className="mt-3 text-xs text-white/55">{t.legal}</div>
           </div>
         </div>
 
-        {/* Output section - no blank space */}
+        {/* Output section */}
         <section className="mt-10 grid gap-6 lg:grid-cols-2">
           <div className="rounded-3xl bg-white/10 p-5 ring-1 ring-white/15 backdrop-blur">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-medium">Input preview</div>
-              <div className="text-xs text-white/60">{hasInput ? "Ready" : "—"}</div>
+              <div className="text-sm font-medium">{t.inputPreview}</div>
+              <div className="text-xs text-white/60">{hasInput ? t.ready : "—"}</div>
             </div>
             {hasInput ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={inputUrl} alt="input" className="mt-4 h-[420px] w-full rounded-2xl bg-white/5 object-contain" />
             ) : (
               <div className="mt-4 grid h-[420px] place-items-center rounded-2xl bg-white/5 text-sm text-white/50">
-                Upload an image to preview
+                {t.inputPlaceholder}
               </div>
             )}
           </div>
 
           <div className="rounded-3xl bg-white/10 p-5 ring-1 ring-white/15 backdrop-blur">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-medium">Output (transparent PNG)</div>
+              <div className="text-sm font-medium">{t.outputPreview}</div>
               <div className="text-xs text-white/60">
-                {status === "uploading" ? "Processing" : hasOutput ? "Done" : "—"}
+                {status === "uploading" ? t.processing : hasOutput ? "OK" : "—"}
               </div>
             </div>
 
@@ -291,22 +306,20 @@ export default function Home() {
                     download="removed-bg.png"
                     className="inline-flex items-center justify-center rounded-2xl bg-emerald-400 px-4 py-2.5 text-sm font-semibold text-slate-950 hover:bg-emerald-300"
                   >
-                    Download PNG
+                    {t.download}
                   </a>
-                  <div className="text-xs text-white/55">Tip: crop & compress for best web performance.</div>
+                  <div className="text-xs text-white/55">{t.tip}</div>
                 </div>
               </>
             ) : (
               <div className="mt-4 grid h-[420px] place-items-center rounded-2xl bg-white/5 text-sm text-white/50">
-                {status === "uploading" ? "Processing…" : "Your result will appear here"}
+                {status === "uploading" ? t.processing : t.outputPlaceholder}
               </div>
             )}
           </div>
         </section>
 
-        <footer className="mt-10 text-xs text-white/50">
-          © {new Date().getFullYear()} · Built with Next.js + Tailwind · remove.bg integration
-        </footer>
+        <footer className="mt-10 text-xs text-white/50">© {new Date().getFullYear()} · Next.js + Tailwind</footer>
       </div>
     </main>
   );

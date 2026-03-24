@@ -1,0 +1,73 @@
+export type Lang = "zh" | "en";
+
+type Dict = Record<string, string>;
+
+const zh: Dict = {
+  brand: "Image Background Remover",
+  tagline: "MVP · remove.bg",
+  chipNoStorage: "不存储",
+  chipLimit: "PNG / JPG ≤ 10MB",
+  heroTitle1: "一键去除背景，",
+  heroTitle2: "立刻导出透明 PNG。",
+  heroDesc: "上传图片即可得到透明背景 PNG。我们不存储图片，全部在内存中处理。",
+  featureFastTitle: "快速流程",
+  featureFastDesc: "上传 → 去背景 → 下载",
+  featurePrivacyTitle: "隐私优先",
+  featurePrivacyDesc: "不存储、不留历史",
+  featureQualityTitle: "高质量",
+  featureQualityDesc: "remove.bg 引擎",
+  upload: "上传",
+  reset: "重置",
+  dropTitle: "拖拽图片到这里，或点击上传",
+  dropHint: "PNG / JPG · 最大 10MB",
+  ready: "就绪",
+  processing: "处理中…",
+  btnRemove: "开始去背景",
+  btnClear: "清空",
+  legal: "上传即表示你不会提交敏感内容。去背景服务由 remove.bg 提供。",
+  inputPreview: "原图预览",
+  outputPreview: "结果（透明 PNG）",
+  inputPlaceholder: "上传图片以预览",
+  outputPlaceholder: "结果会显示在这里",
+  download: "下载 PNG",
+  tip: "建议下载后再裁剪/压缩以获得更好体验。",
+  errType: "请上传 PNG 或 JPG 图片",
+  errSize: "图片太大，请上传 10MB 以内的图片",
+};
+
+const en: Dict = {
+  brand: "Image Background Remover",
+  tagline: "MVP · remove.bg",
+  chipNoStorage: "No storage",
+  chipLimit: "PNG / JPG ≤ 10MB",
+  heroTitle1: "Remove backgrounds,",
+  heroTitle2: "instantly.",
+  heroDesc: "Upload an image to get a clean transparent PNG. We don’t store your images—everything is processed in memory.",
+  featureFastTitle: "Fast workflow",
+  featureFastDesc: "Upload → Remove → Download",
+  featurePrivacyTitle: "Privacy-first",
+  featurePrivacyDesc: "No storage, no history",
+  featureQualityTitle: "High quality",
+  featureQualityDesc: "remove.bg engine",
+  upload: "Upload",
+  reset: "Reset",
+  dropTitle: "Drag & drop or click to upload",
+  dropHint: "PNG / JPG · max 10MB",
+  ready: "Ready",
+  processing: "Processing…",
+  btnRemove: "Remove background",
+  btnClear: "Clear",
+  legal: "By uploading you agree not to submit sensitive content. Service powered by remove.bg.",
+  inputPreview: "Input preview",
+  outputPreview: "Output (transparent PNG)",
+  inputPlaceholder: "Upload an image to preview",
+  outputPlaceholder: "Your result will appear here",
+  download: "Download PNG",
+  tip: "Tip: crop & compress for best web performance.",
+  errType: "Please upload a PNG or JPG image",
+  errSize: "Image too large (max 10MB)",
+};
+
+export function getDict(lang: Lang): Dict {
+  return lang === "zh" ? zh : en;
+}
