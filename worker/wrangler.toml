@@ -1,0 +1,6 @@
+name = "image-background-remover"
+main = "src/index.ts"
+compatibility_date = "2025-03-01"
+
+[vars]
+# Set in Cloudflare dashboard or via: wrangler secret put REMOVEBG_API_KEY
