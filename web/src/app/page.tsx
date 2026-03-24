@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getDict, type Lang } from "@/lib/i18n";
+import { getDict, type Lang } from "../lib/i18n";
 
 type Status = "idle" | "uploading" | "done" | "error";
 
