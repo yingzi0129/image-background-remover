@@ -207,6 +207,8 @@ export default function Home() {
                 </div>
               ) : null}
             </div>
+
+            <AuthCard />
           </div>
         </div>
 
@@ -220,10 +222,6 @@ export default function Home() {
               </span>
             </h1>
             <p className="mt-4 max-w-xl text-base leading-7 text-white/70">{t.heroDesc}</p>
-
-            <div className="mt-6 max-w-md">
-              <AuthCard />
-            </div>
 
             <div className="mt-6 flex flex-wrap gap-3 text-sm">
               <div className="rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/15 backdrop-blur">
