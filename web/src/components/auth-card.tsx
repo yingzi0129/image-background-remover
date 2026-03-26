@@ -9,6 +9,8 @@ type User = {
   avatar_url?: string;
 };
 
+const AUTH_BASE = "https://image-background-remover.caiweihaozxc.workers.dev";
+
 function GoogleIcon() {
   return (
     <svg viewBox="0 0 18 18" className="h-4 w-4" aria-hidden="true">
@@ -25,7 +27,7 @@ export function AuthCard() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    fetch("/api/me", { credentials: "include" })
+    fetch(`${AUTH_BASE}/api/me`, { credentials: "include" })
       .then(async (r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data?.authenticated) setUser(data.user);
@@ -40,7 +42,7 @@ export function AuthCard() {
   if (!user) {
     return (
       <a
-        href="https://image-background-remover.caiweihaozxc.workers.dev/api/auth/google/login"
+        href={`${AUTH_BASE}/api/auth/google/login`}
         className="inline-flex h-8 items-center gap-2 rounded-full bg-white px-3 text-xs font-medium text-slate-900 shadow-sm transition hover:bg-white/90"
       >
         <GoogleIcon />
@@ -58,7 +60,7 @@ export function AuthCard() {
         <div className="grid h-6 w-6 place-items-center rounded-full bg-white/15 text-[10px]">U</div>
       )}
       <span className="max-w-[120px] truncate">{user.name || user.email || "已登录"}</span>
-      <a href="https://image-background-remover.caiweihaozxc.workers.dev/api/auth/logout" className="text-white/70 hover:text-white">
+      <a href={`${AUTH_BASE}/api/auth/logout`} className="text-white/70 hover:text-white">
         退出
       </a>
     </div>
