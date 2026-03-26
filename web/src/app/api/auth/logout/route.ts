@@ -2,8 +2,9 @@ export const runtime = "edge";
 
 import { NextResponse } from "next/server";
 
-const AUTH_BASE = "https://image-background-remover.caiweihaozxc.workers.dev";
-
-export async function GET() {
-  return NextResponse.redirect(`${AUTH_BASE}/api/auth/logout`);
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const resp = NextResponse.redirect(`${url.origin}/`);
+  resp.cookies.set("ibr_session", "", { path: "/", maxAge: 0, httpOnly: true, secure: true, sameSite: "lax" });
+  return resp;
 }

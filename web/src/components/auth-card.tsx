@@ -33,16 +33,11 @@ export function AuthCard() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return <div className="inline-flex h-8 items-center rounded-full bg-white/8 px-3 text-xs text-white/60 ring-1 ring-white/10 backdrop-blur">Checking…</div>;
-  }
+  if (loading) return <div className="inline-flex h-8 items-center rounded-full bg-white/8 px-3 text-xs text-white/60 ring-1 ring-white/10 backdrop-blur">Checking…</div>;
 
   if (!user) {
     return (
-      <a
-        href="/api/auth/google/login"
-        className="inline-flex h-8 items-center gap-2 rounded-full bg-white px-3 text-xs font-medium text-slate-900 shadow-sm transition hover:bg-white/90"
-      >
+      <a href="/api/auth/google/login" className="inline-flex h-8 items-center gap-2 rounded-full bg-white px-3 text-xs font-medium text-slate-900 shadow-sm transition hover:bg-white/90">
         <GoogleIcon />
         <span>使用谷歌登录</span>
       </a>
@@ -51,16 +46,9 @@ export function AuthCard() {
 
   return (
     <div className="inline-flex h-8 items-center gap-2 rounded-full bg-white/10 px-2 pr-3 text-xs text-white ring-1 ring-white/15 backdrop-blur">
-      {user.avatar_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={user.avatar_url} alt={user.name || "avatar"} className="h-6 w-6 rounded-full" />
-      ) : (
-        <div className="grid h-6 w-6 place-items-center rounded-full bg-white/15 text-[10px]">U</div>
-      )}
+      {user.avatar_url ? <img src={user.avatar_url} alt={user.name || "avatar"} className="h-6 w-6 rounded-full" /> : <div className="grid h-6 w-6 place-items-center rounded-full bg-white/15 text-[10px]">U</div>}
       <span className="max-w-[120px] truncate">{user.name || user.email || "已登录"}</span>
-      <a href="/api/auth/logout" className="text-white/70 hover:text-white">
-        退出
-      </a>
+      <a href="/api/auth/logout" className="text-white/70 hover:text-white">退出</a>
     </div>
   );
 }

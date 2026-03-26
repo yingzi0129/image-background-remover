@@ -1,9 +1,13 @@
 export const runtime = "edge";
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getGoogleOAuthUrl } from "@/lib/google-auth";
 
-const AUTH_BASE = "https://image-background-remover.caiweihaozxc.workers.dev";
-
-export async function GET() {
-  return NextResponse.redirect(`${AUTH_BASE}/api/auth/google/login`);
+export async function GET(req: NextRequest) {
+  try {
+    const origin = req.nextUrl.origin;
+    return NextResponse.redirect(getGoogleOAuthUrl(origin));
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Login init failed" }, { status: 500 });
+  }
 }

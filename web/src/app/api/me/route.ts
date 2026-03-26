@@ -1,17 +1,25 @@
 export const runtime = "edge";
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { verifySession } from "@/lib/auth";
 
-const AUTH_BASE = "https://image-background-remover.caiweihaozxc.workers.dev";
+export async function GET(req: NextRequest) {
+  try {
+    const token = req.cookies.get("ibr_session")?.value;
+    if (!token) return NextResponse.json({ authenticated: false }, { status: 401 });
+    const session = await verifySession(token);
 
-export async function GET() {
-  const resp = await fetch(`${AUTH_BASE}/api/me`, { cache: "no-store" });
-  const text = await resp.text();
-  return new NextResponse(text, {
-    status: resp.status,
-    headers: {
-      "content-type": resp.headers.get("content-type") || "application/json; charset=utf-8",
-      "cache-control": "no-store",
-    },
-  });
+    const db = process.env.USERS_DB;
+    if (!db) throw new Error("Missing USERS_DB binding");
+
+    // @ts-ignore
+    const user = await db.prepare(`SELECT id, google_sub, email, email_verified, name, given_name, family_name, avatar_url, locale, created_at, updated_at, last_login_at FROM users WHERE google_sub = ?1`)
+      .bind(session.uid)
+      .first();
+
+    if (!user) return NextResponse.json({ authenticated: false }, { status: 401 });
+    return NextResponse.json({ authenticated: true, user });
+  } catch {
+    return NextResponse.json({ authenticated: false }, { status: 401 });
+  }
 }
