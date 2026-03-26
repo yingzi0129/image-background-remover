@@ -83,6 +83,15 @@ async function upsertUser(env: Env, user: Awaited<ReturnType<typeof fetchGoogleU
 }
 
 async function handleGoogleLogin(req: Request, env: Env) {
+  if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.SESSION_SECRET) {
+    return json({
+      error: 'Missing Google auth configuration',
+      hasClientId: Boolean(env.GOOGLE_CLIENT_ID),
+      hasClientSecret: Boolean(env.GOOGLE_CLIENT_SECRET),
+      hasSessionSecret: Boolean(env.SESSION_SECRET),
+    }, { status: 500 });
+  }
+
   const origin = getOrigin(req, env);
   const redirectUri = `${origin}/api/auth/google/callback`;
   const state = crypto.randomUUID();
