@@ -1,0 +1,12 @@
+name = "image-background-remover"
+main = ".vercel/output/static/_worker.js/index.js"
+compatibility_date = "2025-03-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "USERS_DB"
+database_name = "image-background-remover-users"
+database_id = "bc275a03-ecfa-4ccc-95d4-fd7b5056f89f"
+
+[vars]
+APP_ORIGIN = "https://image-background-remover-9bg.pages.dev"
