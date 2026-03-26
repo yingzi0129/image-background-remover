@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { NextResponse } from "next/server";
 
 const AUTH_BASE = "https://image-background-remover.caiweihaozxc.workers.dev";
